@@ -1,6 +1,8 @@
 package com.iven.musicplayergo.music
 
 import android.database.Cursor
+import android.media.MediaMetadataRetriever
+import android.media.MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST
 import android.os.AsyncTask
 import android.provider.MediaStore
 import androidx.lifecycle.MutableLiveData
@@ -24,7 +26,8 @@ class MusicViewModel : ViewModel() {
             // Query the external storage for music files
             // If query result is not empty
             if (musicCursor.moveToFirst()) {
-                val artist = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
+
+                val artist = musicCursor.getColumnIndex("album_artist")
                 val year = musicCursor.getColumnIndex(MediaStore.Audio.Media.YEAR)
                 val track = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK)
                 val title = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
@@ -34,13 +37,16 @@ class MusicViewModel : ViewModel() {
 
                 // Now loop through the music files
                 do {
-                    val audioArtist = musicCursor.getString(artist)
+                    val audioArtist = musicCursor.getString(artist) ?: "Unknown Artist"
+
+                    val audioPath = musicCursor.getString(path)
+
                     val audioYear = musicCursor.getInt(year)
                     val audioTrack = musicCursor.getInt(track)
                     val audioTitle = musicCursor.getString(title)
                     val audioDuration = musicCursor.getLong(duration)
                     val audioAlbum = musicCursor.getString(album)
-                    val audioPath = musicCursor.getString(path)
+
 
                     // Add the current music to the list
                     allDeviceSongs.add(
